@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SnapSaver</string>
+    
+    <!-- Main screen -->
+        <!-- Button texts -->
+        <string name="button_copy_picture">Copy Snap Pictures</string>
+        <string name="button_copy_video"> Copy Snap Videos</string>
+        <string name="button_copy_both">Copy Both</string>
+
+    <!-- TextView texts -->
+
+    <!-- Locations -->
+    <string name="location_save">/storage/sdcard0/snaps</string>
+    <string name="location_pictures">/pictures/</string>
+    <string name="location_videos">/videos/</string>
+    
+    <!-- Menu strings -->
+    <string name="menu_location_text_for_ppls">This is the where the snaps will be stored</string>
+    <string name="menu_change_directory">Change Directory</string>
+    
+    <!-- Dialog strings -->
+    <string name="dialog_negative">Cancel</string>
+    <string name="dialog_positive">Save</string>
+    <string name="dialog_new_directory">Enter new directory:</string>
+    
+    <!-- Information strings -->
+    <string name="information_string">This app should copy your snapchats into a folder of your choice.</string>
+    
+    <!-- Progress strings -->
+    <string name="progress_1_copy_picture">Copying pictures to: </string>
+    <string name="progress_1_copy_video">Copying videos to: </string>
+    <string name="progress_2_rename_picture">Renaming pictures in: </string>
+    <string name="progress_2_rename_video">Renaming videos in: </string>
+    
+</resources>
