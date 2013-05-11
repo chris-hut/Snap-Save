@@ -1,15 +1,15 @@
 package hey.rich.snapsaver;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -18,6 +18,8 @@ public class MainActivity extends Activity {
 	private Button buttonPicture;
 	private Button buttonVideo;
 	private Button buttonBoth;
+	
+	/** Strings */
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,7 @@ public class MainActivity extends Activity {
 		buttonPicture = (Button) findViewById(R.id.button_copy_picture);
 		buttonVideo = (Button) findViewById(R.id.button_copy_video);
 		buttonBoth = (Button) findViewById(R.id.button_both);
+		
 
 		this.buttonOnClick();
 	}
@@ -124,25 +127,47 @@ public class MainActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	/**
+	 * Creates a dialog to allow the user to change their current directory
+	 * 
+	 * Modified from mkoyong:
+	 * http://www.mkyong.com/android/android-custom-dialog-example/
+	 * */
+	private void changeDirectory(Context context)
+	 {
+		 final Dialog dialog = new Dialog(context);
+		 dialog.setContentView(R.layout.change_directory);
+		 dialog.setTitle(R.string.dialog_new_directory);
+		 
+		 // Set the custom dialog components
+		 EditText text = (EditText) dialog.findViewById(R.id.dialog_edit_text);
+		 // TODO: Should the hint be the defualt save location or whatever they currently have as save location
+		 Button saveButton = (Button) dialog.findViewById(R.id.dialog_positive_button);
+		 Button cancelButton = (Button) dialog.findViewById(R.id.dialog_negative_button);
+		 
+		 saveButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO: Save the text
+				
+				// Dismiss the dialog
+				dialog.dismiss();
+			}
+		});
+		 
+		 cancelButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// Dismiss the dialog
+				dialog.dismiss();
+			}
+		});
+		 
+		 dialog.show();
+	 }
+	
 
-	private void changeDirectory(Context context) {
-		// Create dialog
-		AlertDialog.Builder changeDirectoryDialogBuilder = new AlertDialog.Builder(
-				context);
-
-		// TODO: Convert to R.string
-		changeDirectoryDialogBuilder.setTitle("Change Directory");
-
-		changeDirectoryDialogBuilder.setMessage("Enter new directory:")
-				.setCancelable(true);
-		
-		LayoutInflater dialogCreaterInflater = getLayoutInflater();
-
-		View dialogLayout = dialogCreaterInflater.inflate(R.layout.change_directory, (ViewGroup) getCurrentFocus());
-		changeDirectoryDialogBuilder.setView(dialogLayout);
-		
-		AlertDialog dialogDirectoryChanger = changeDirectoryDialogBuilder.create();
-		dialogDirectoryChanger.show();
-
-	}
 }

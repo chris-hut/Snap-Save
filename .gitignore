@@ -1,0 +1,5 @@
+bin/classes/
+*.class
+*.apk
+*.dex
+*.ap_
