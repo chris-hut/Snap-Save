@@ -1,9 +1,14 @@
 package hey.rich.snapsaver;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,23 +19,31 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	/** onCLickListeners */
+	// On Clickers
 	private Button buttonPicture;
 	private Button buttonVideo;
 	private Button buttonBoth;
 	
-	/** Strings */
-
+	// Strings 
+	private String storageLocation;
+	private static final String STRING_PREFERENCES = "stringPrefs";
+	
+	// Shared Preferences
+	private SharedPreferences prefs;
+	private SharedPreferences.Editor prefEditor;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		prefs = getSharedPreferences(STRING_PREFERENCES, MODE_PRIVATE);
+		prefEditor = prefs.edit();
 
 		buttonPicture = (Button) findViewById(R.id.button_copy_picture);
 		buttonVideo = (Button) findViewById(R.id.button_copy_video);
 		buttonBoth = (Button) findViewById(R.id.button_both);
 		
-
 		this.buttonOnClick();
 	}
 
@@ -67,37 +80,73 @@ public class MainActivity extends Activity {
 		});
 	}
 
-	/** Copy files to new directory */
+	/** Copy files to new directory 
+	 * 
+	 * Code modifed from:
+	 * http://stackoverflow.com/questions/10735273/copy-folders-in-data-data-to-sdcard-viceversa
+	 */
 	private void copyDirectory(String type) {
 		String toastText = "";
+		String copyString = "cp ";
 
 		if (type.equals("picture")) {
 			toastText = getString(R.string.progress_1_copy_picture)
-					+ getString(R.string.location_save)
 					+ getString(R.string.location_pictures);
+			// TODO: Don't make this a hardcoded string huh
+			copyString = copyString + "/data/data/com.snapchat.android/cache/received_image_snaps/* ";
 		} else if (type.equals("video")) {
 			toastText = getString(R.string.progress_1_copy_video)
-					+ getString(R.string.location_save)
 					+ getString(R.string.location_videos);
 		}
 
 		// Toast the copy
 		Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT)
 				.show();
+		
+		// Add their storage location
+		copyString = copyString + storageLocation + getString(R.string.location_pictures);
 		// Do copy
+		// TODO: Need to somehow figure out how many files were copied, or if no files were copied
+		try{
+			Process suProcess = Runtime.getRuntime().exec("su");
+			DataOutputStream os = new DataOutputStream(suProcess.getOutputStream());
+			
+			os.writeBytes(copyString + "\n");
+			os.flush();
+			os.writeBytes("exit\n");
+			os.flush();
+			int suProcessRetval = suProcess.waitFor();
+			
+			if (suProcessRetval != 255)
+			{
+				// We were given root
+			}else
+			{
+				// No root :(
+			}
+		}catch(IOException e){
+			e.printStackTrace();
+		}catch(InterruptedException e)
+		{
+			Log.w("hey.rich.snapsaver", "Error getting root.");
+			e.printStackTrace();
+		}
 	}
 
 	/** Rename all of the files */
 	private void renameAllFiles(String directory) {
 		String toastText = "";
-
+		String renameString ="rn ";
+		
 		if (directory.equals("/pictures/")) {
 			toastText = getString(R.string.progress_2_rename_picture)
-					+ getString(R.string.location_save)
+					+ storageLocation
 					+ getString(R.string.location_pictures);
+			// TODO: Don't make this a hardcoded string
+			renameString = renameString + "";
 		} else if (directory.equals("/videos/")) {
 			toastText = getString(R.string.progress_2_rename_video)
-					+ getString(R.string.location_save)
+					+ storageLocation
 					+ getString(R.string.location_videos);
 		}
 
@@ -141,8 +190,10 @@ public class MainActivity extends Activity {
 		 dialog.setTitle(R.string.dialog_new_directory);
 		 
 		 // Set the custom dialog components
-		 EditText text = (EditText) dialog.findViewById(R.id.dialog_edit_text);
-		 // TODO: Should the hint be the defualt save location or whatever they currently have as save location
+		 final EditText text = (EditText) dialog.findViewById(R.id.dialog_edit_text);
+		 
+		 // Setting text to be what every it is
+		 text.setText(storageLocation);
 		 Button saveButton = (Button) dialog.findViewById(R.id.dialog_positive_button);
 		 Button cancelButton = (Button) dialog.findViewById(R.id.dialog_negative_button);
 		 
@@ -151,9 +202,13 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO: Save the text
+				storageLocation = text.getText().toString();
 				
 				// Dismiss the dialog
 				dialog.dismiss();
+				
+				// Set the EditText to be the storageLocation text
+				text.setText(storageLocation);
 			}
 		});
 		 
@@ -169,5 +224,20 @@ public class MainActivity extends Activity {
 		 dialog.show();
 	 }
 	
-
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		prefs = this.getSharedPreferences("hey.rich.SnapSaver", Context.MODE_PRIVATE);
+		prefEditor.putString("storageLocation", storageLocation);
+		prefEditor.commit();
+	}
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		storageLocation = prefs.getString("storageLocation", getString(R.string.default_location));
+		
+	}
 }

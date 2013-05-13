@@ -12,9 +12,9 @@
     <!-- TextView texts -->
 
     <!-- Locations -->
-    <string name="location_save">/storage/sdcard0/snaps</string>
-    <string name="location_pictures">/pictures/</string>
-    <string name="location_videos">/videos/</string>
+    <string name="location_pictures">/storage/sdcard0/snaps/pictures/</string>
+    <string name="location_videos">/data/media/0/Android/data/com.snapchat.android/cache/tcs_pahn</string>
+    <string name="default_location">/storage/sdcard0/snaps</string>
     
     <!-- Menu strings -->
     <string name="menu_location_text_for_ppls">This is the where the snaps will be stored</string>
