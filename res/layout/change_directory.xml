@@ -4,11 +4,12 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical" >
 	
+    
 	<EditText
 	    android:id="@+id/dialog_edit_text"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:hint="@string/location_save"
+		android:hint="@string/default_location"
 		/>
 
 	<Button
