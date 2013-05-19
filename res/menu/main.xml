@@ -1,9 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <!-- Opens up dialog that allows for user to modify the storage location -->
     <item
         android:id="@+id/settings_change_directory"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_change_directory"/>
+    <!-- Allows user to choose if they want pictures and videos stored in different directories -->
+    <group android:checkableBehavior="all" >
+        <item
+            android:id="@+id/settings_check_box_split_directory"
+            android:checked="false"
+            android:orderInCategory="200"
+            android:title="@string/menu_check_box_split"/>
+    </group>
 
 </menu>

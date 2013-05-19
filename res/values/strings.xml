@@ -12,13 +12,14 @@
     <!-- TextView texts -->
 
     <!-- Locations -->
-    <string name="location_pictures">/storage/sdcard0/snaps/pictures/</string>
-    <string name="location_videos">/data/media/0/Android/data/com.snapchat.android/cache/tcs_pahn</string>
-    <string name="default_location">/storage/sdcard0/snaps</string>
+    <string name="location_pictures">/data/data/com.snapchat.android/cache/received_image_snaps/</string>
+    <string name="location_videos">/data/media/0/Android/data/com.snapchat.android/cache/tcs_pahn/</string>
+    <string name="default_location">/storage/sdcard0/snaps/</string>
     
     <!-- Menu strings -->
     <string name="menu_location_text_for_ppls">This is the where the snaps will be stored</string>
     <string name="menu_change_directory">Change Directory</string>
+    <string name="menu_check_box_split">Split pictures and videos?</string>
     
     <!-- Dialog strings -->
     <string name="dialog_negative">Cancel</string>

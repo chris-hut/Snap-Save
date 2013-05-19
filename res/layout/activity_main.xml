@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/button_copy_video"
         android:layout_centerHorizontal="true"
-        android:text="@string/button_copy_both" />
+        android:text="@string/button_copy_both"
+        android:enabled="false" />
 
     <Button
         android:id="@+id/button_copy_video"
@@ -23,7 +24,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="130dp"
-        android:text="@string/button_copy_video" />
+        android:text="@string/button_copy_video"
+        android:enabled="false" />
 
     <Button
         android:id="@+id/button_copy_picture"
