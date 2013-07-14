@@ -1,10 +1,8 @@
 
 package hey.rich.snapsaver;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -17,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -45,6 +42,9 @@ public class MainActivity extends Activity {
     private final boolean LOCAL_LOGD = true;
     /** Flag for Verbose logs. */
     private final boolean LOCAL_LOGV = true;
+    
+    /**File Manager*/
+    private FileManager mFileManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +67,11 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                // Copy Pictures
-                copyDirectory("pictures/");
+            	// Copy pictures
+            	mFileManager.copySUDirectory(getString(R.string.location_pictures), storageLocation);
+            	
+            	// Rename pictures
+            	// TODO: Create method to check files to rename
             }
         });
 
@@ -76,8 +79,11 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                // Copy videos
-                copyDirectory("videos/");
+            	// Copy videos
+            	mFileManager.copySUDirectory(getString(R.string.location_videos), storageLocation);
+            	
+            	// Rename videos
+            	// TODO: Create method to check files to rename
             }
         });
 
@@ -85,7 +91,12 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                // Copy videos and pictures
+            	// Copy pics and videos
+            	mFileManager.copySUDirectory(getString(R.string.location_pictures), storageLocation);
+            	mFileManager.copySUDirectory(getString(R.string.location_videos), storageLocation);
+            	
+            	// Rename pics and videos
+            	// TODO: create method to check files to rename
             }
         });
     }
@@ -96,7 +107,7 @@ public class MainActivity extends Activity {
      * -in-data-data-to-sdcard-viceversa
      */
     private void copyDirectory(String type) {
-        String toastText = "";
+        /*String toastText = "";
         String copyString = "cp ";
         String split = type;
 
@@ -158,7 +169,8 @@ public class MainActivity extends Activity {
         }
 
         // Rename files now
-        renameAllFiles(type, split);
+        renameAllFiles(type, split);*/
+    	
     }
 
     /**
@@ -363,6 +375,9 @@ public class MainActivity extends Activity {
                 getString(R.string.default_location));
         if(LOCAL_LOGV) Log.v("Snaps", "storageLocation set to: " + storageLocation);
         splitDirectory = prefs.getBoolean("SPLIT_DIRECTORY", false);
+        
+        // Creating new filemanager
+        mFileManager = new FileManager();
 
     }
 }

@@ -12,8 +12,8 @@
     <!-- TextView texts -->
 
     <!-- Locations -->
-    <string name="location_pictures">/data/data/com.snapchat.android/cache/received_image_snaps/</string>
-    <string name="location_videos">/data/media/0/Android/data/com.snapchat.android/cache/tcs_pahn/</string>
+    <string name="location_pictures">/data/data/com.snapchat.android/cache/received_image_snaps/*</string>
+    <string name="location_videos">/data/media/0/Android/data/com.snapchat.android/cache/received_video_snaps/*</string>
     <string name="default_location">/storage/sdcard0/snaps/</string>
     
     <!-- Menu strings -->
