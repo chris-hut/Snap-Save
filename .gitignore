@@ -3,3 +3,5 @@ bin/classes/
 *.apk
 *.dex
 *.ap_
+gen/*
+.classpath
