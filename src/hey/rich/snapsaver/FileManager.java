@@ -1,12 +1,14 @@
 package hey.rich.snapsaver;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
+import eu.chainfire.libsuperuser.Shell;
 
 public class FileManager {
 
@@ -28,9 +30,11 @@ public class FileManager {
 	 *            The absolute path of the from directory
 	 * @param to
 	 *            The absolute path of the to directory
+	 * @param The
+	 *            context of the calling method
 	 * @return True if the copy was successful otherwise false
 	 */
-	public boolean copySUDirectory(String from, String to) {
+	public void copySUDirectory(String from, String to, Context context) {
 		File directoryCheck;
 		// Check if from directory exists
 		directoryCheck = new File(from);
@@ -43,7 +47,7 @@ public class FileManager {
 		if (DEBUG_LOG_FLAG)
 			Log.d(LOG_TAG, "CopyString: " + copyString);
 
-		try {
+		/*try {
 			Process suProcess = Runtime.getRuntime().exec("su");
 			DataOutputStream os = new DataOutputStream(
 					suProcess.getOutputStream());
@@ -79,7 +83,9 @@ public class FileManager {
 			Log.w(LOG_TAG, "Error getting root.");
 			e.printStackTrace();
 			return false;
-		}
+		}*/
+		
+		(new BackGroundTask()).setContext(context).execute(copyString.split(" "));
 
 		// Check if to directory exists
 
@@ -121,4 +127,54 @@ public class FileManager {
 			return false;
 		}
 	}
+
+	// SU stuff
+	// Based of Chainfires libsuperuser_example
+	private class BackGroundTask extends AsyncTask<String, Void, List<String>> {
+		private Context context = null;
+		private boolean suAvailable = false;
+		private List<String> suResult = null;
+
+		public BackGroundTask(){
+			suResult = new ArrayList<String>();
+		}
+		
+		public BackGroundTask setContext(Context c) {
+			this.context = c;
+			return this;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			((MainActivity)context).setProgressBarIndeterminateVisibility(true);
+		}
+
+		@Override
+		protected List<String> doInBackground(String... params) {
+			// Some SU stuff
+			suResult = null;
+			suAvailable = Shell.SU.available();
+			if (suAvailable) {
+				suResult = Shell.SU.run(params);
+				// TODO: Update progress if this is taking a long time
+			}
+
+			return suResult;
+		}
+
+		@Override
+		protected void onPostExecute(List<String> result) {
+			// Output handling
+			if (DEBUG_LOG_FLAG) {
+				Log.d(LOG_TAG, "Root? " + suAvailable);
+				Log.d(LOG_TAG, "Result: ");
+				Iterator<String> it = result.iterator();
+				while (it.hasNext()) {
+					Log.d(LOG_TAG, it.next());
+				}
+			}
+			((MainActivity)context).setProgressBarIndeterminateVisibility(false);
+		}
+	}
+
 }

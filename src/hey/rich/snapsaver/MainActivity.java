@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // Must be before setContentView
         setContentView(R.layout.activity_main);
         
         prefs = getSharedPreferences(STRING_PREFERENCES, MODE_PRIVATE);
@@ -68,7 +70,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
             	// Copy pictures
-            	mFileManager.copySUDirectory(getString(R.string.location_pictures), storageLocation);
+            	copySnapChatDirectory(getString(R.string.location_pictures), storageLocation);
             	
             	// Rename pictures
             	// TODO: Create method to check files to rename
@@ -80,7 +82,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
             	// Copy videos
-            	mFileManager.copySUDirectory(getString(R.string.location_videos), storageLocation);
+            	copySnapChatDirectory(getString(R.string.location_videos), storageLocation);
             	
             	// Rename videos
             	// TODO: Create method to check files to rename
@@ -92,8 +94,8 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
             	// Copy pics and videos
-            	mFileManager.copySUDirectory(getString(R.string.location_pictures), storageLocation);
-            	mFileManager.copySUDirectory(getString(R.string.location_videos), storageLocation);
+            	copySnapChatDirectory(getString(R.string.location_pictures), storageLocation);
+            	copySnapChatDirectory(getString(R.string.location_videos), storageLocation);
             	
             	// Rename pics and videos
             	// TODO: create method to check files to rename
@@ -101,76 +103,8 @@ public class MainActivity extends Activity {
         });
     }
 
-    /**
-     * Copy files to new directory Code modifed from:
-     * http://stackoverflow.com/questions/10735273/copy-folders
-     * -in-data-data-to-sdcard-viceversa
-     */
-    private void copyDirectory(String type) {
-        /*String toastText = "";
-        String copyString = "cp ";
-        String split = type;
-
-        // Decide if we are splitting pictures and videos
-        if(LOCAL_LOGV) Log.v("Snaps", "splitDirectory is: " + splitDirectory);
-        if (!splitDirectory) {
-            if (LOCAL_LOGV)
-                Log.v("Snaps", "Videos and pictures are in the same directory");
-            split = "";
-        }
-
-        if (type.equals("pictures/")) {
-            toastText = getString(R.string.progress_1_copy_picture);
-            copyString = copyString + getString(R.string.location_pictures);
-        } else if (type.equals("videos/")) {
-            toastText = getString(R.string.progress_1_copy_video);
-            copyString = copyString + getString(R.string.location_videos);
-        } else
-        {
-            // This should never happen
-            // TODO: Handle this much nicer
-            throw new RuntimeException("Called with wrong parameter. This shouldn't happen");
-        }
-        
-        toastText = toastText + storageLocation + split;
-        copyString = copyString + "* " + storageLocation + split;
-        
-        // Toast the copy
-        Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT)
-                .show();
-
-        if (LOCAL_LOGV)
-            Log.v("Snaps_Copy", "CopyString: " + copyString);
-
-        // Do copy
-        // TODO: Need to somehow figure out how many files were copied, or if no
-        // files were copied
-        try {
-            Process suProcess = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(
-                    suProcess.getOutputStream());
-
-            os.writeBytes(copyString + "\n");
-            os.flush();
-            os.writeBytes("exit\n");
-            os.flush();
-            int suProcessRetval = suProcess.waitFor();
-
-            if (suProcessRetval != 255) {
-                // We were given root
-            } else {
-                // No root :(
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            Log.w("hey.rich.snapsaver", "Error getting root.");
-            e.printStackTrace();
-        }
-
-        // Rename files now
-        renameAllFiles(type, split);*/
-    	
+    private void copySnapChatDirectory(String from, String to) {
+    	mFileManager.copySUDirectory(from, to, this);
     }
 
     /**
