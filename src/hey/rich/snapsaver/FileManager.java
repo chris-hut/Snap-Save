@@ -47,47 +47,11 @@ public class FileManager {
 		if (DEBUG_LOG_FLAG)
 			Log.d(LOG_TAG, "CopyString: " + copyString);
 
-		/*try {
-			Process suProcess = Runtime.getRuntime().exec("su");
-			DataOutputStream os = new DataOutputStream(
-					suProcess.getOutputStream());
-
-			BufferedReader b = new BufferedReader(new InputStreamReader(
-					suProcess.getInputStream()));
-			String line;
-
-			os.writeBytes(copyString + "\n");
-			os.flush();
-			os.writeBytes("exit\n");
-			os.flush();
-
-			while (((line = b.readLine()) != null) && (DEBUG_LOG_FLAG)) {
-				Log.d(LOG_TAG, line);
-			}
-
-			int suProcessRetval = suProcess.waitFor();
-
-			if (suProcessRetval != 255) {
-				// We got root
-				// TODO: Actually check if we are copying the file or not.
-				return true;
-			} else {
-				// Didn't get root
-				Log.w(LOG_TAG, "We didn't get root");
-				return true;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		} catch (InterruptedException e) {
-			Log.w(LOG_TAG, "Error getting root.");
-			e.printStackTrace();
-			return false;
-		}*/
 		
-		(new BackGroundTask()).setContext(context).execute(copyString.split(" "));
+		(new BackGroundTask()).setContext(context).execute(copyString);
 
 		// Check if to directory exists
+		// TODO: Implement check to double check that we copied them files
 
 	}
 
