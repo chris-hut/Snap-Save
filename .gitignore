@@ -5,3 +5,4 @@ bin/classes/
 *.ap_
 gen/*
 .classpath
+gen/hey/rich/snapsaver/*

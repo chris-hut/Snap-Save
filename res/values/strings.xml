@@ -8,6 +8,10 @@
         <string name="button_copy_picture">Copy Snap Pictures</string>
         <string name="button_copy_video"> Copy Snap Videos</string>
         <string name="button_copy_both">Copy Both</string>
+        <string name="button_launch_floater">Launch Floater</string>
+        <string name="button_floating_pictures">Pictures</string>
+        <string name="button_floating_videos">Videos</string>
+        <string name="button_floating_both">Both</string>
 
     <!-- TextView texts -->
 
@@ -34,5 +38,8 @@
     <string name="progress_1_copy_video">Copying videos to: </string>
     <string name="progress_2_rename_picture">Renaming pictures in: </string>
     <string name="progress_2_rename_video">Renaming videos in: </string>
+    
+    <!-- Floating Strings -->
+    <string name="text_float">It\'s magic!</string>
     
 </resources>

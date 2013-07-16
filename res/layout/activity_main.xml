@@ -36,4 +36,12 @@
         android:layout_marginBottom="48dp"
         android:text="@string/button_copy_picture" />
 
+    <Button
+        android:id="@+id/button_floater"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_both"
+        android:layout_centerHorizontal="true"
+        android:text="@string/button_launch_floater" />
+
 </RelativeLayout>
