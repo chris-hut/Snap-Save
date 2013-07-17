@@ -6,3 +6,6 @@ bin/classes/
 gen/*
 .classpath
 gen/hey/rich/snapsaver/*
+gen/hey/rich/snapsaver/R.java
+bin/
+res/drawable-hdpi/*

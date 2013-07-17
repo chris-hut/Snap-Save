@@ -57,7 +57,7 @@ public class FloatingWindow extends StandOutWindow {
 				@Override
 				public void onClick(View v) {
 					// Copy them pictures
-					mFileManager.copySnapChatPictures();
+					mFileManager.copySnapChatPictures(getApplicationContext());
 					// Rename them pictures
 					mFileManager.renameSnapChatPictures();
 				}
@@ -68,7 +68,7 @@ public class FloatingWindow extends StandOutWindow {
 				@Override
 				public void onClick(View v) {
 					// Copy them videos
-					mFileManager.copySnapChatVideos();
+					mFileManager.copySnapChatVideos(getApplicationContext());
 					
 					// Rename them videos
 					mFileManager.renameSnapChatVideos();
@@ -80,8 +80,8 @@ public class FloatingWindow extends StandOutWindow {
 				@Override
 				public void onClick(View v) {
 					// Copy both of them!
-					mFileManager.copySnapChatPictures();
-					mFileManager.copySnapChatVideos();
+					mFileManager.copySnapChatPictures(getApplicationContext());
+					mFileManager.copySnapChatVideos(getApplicationContext());
 					
 					// Rename all of those things
 					mFileManager.renameSnapChatPictures();

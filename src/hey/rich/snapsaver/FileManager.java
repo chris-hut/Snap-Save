@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import eu.chainfire.libsuperuser.Shell;
 
@@ -33,9 +34,6 @@ public class FileManager {
 	/** Location of new snap chat video save directory */
 	private String mVideoSaveDirectory;
 
-	/** Context to be used from the BackGroundTask */
-	private Context mContext = null;
-
 	public FileManager() {
 		setVideoSaveDirectory("/storage/sdcard0/snaps");
 		setPictureSaveDirectory("/storage/sdcard0/snaps");
@@ -50,7 +48,6 @@ public class FileManager {
 	 */
 	public FileManager(Context context) {
 		super();
-		this.mContext = context;
 	}
 
 	/**
@@ -64,11 +61,9 @@ public class FileManager {
 	 * @param context
 	 *            Context for the BackGroundTask
 	 */
-	public FileManager(String pictureSaveDirectory, String videoSaveDirectory,
-			Context context) {
+	public FileManager(String pictureSaveDirectory, String videoSaveDirectory) {
 		setVideoSaveDirectory(videoSaveDirectory);
 		setPictureSaveDirectory(pictureSaveDirectory);
-		this.mContext = context;
 	}
 
 	/**
@@ -76,8 +71,9 @@ public class FileManager {
 	 * 
 	 * @boolean true iff the copy was successful
 	 */
-	public boolean copySnapChatPictures() {
-		copySUDirectory(mPictureStorageDirectory, mPictureSaveDirectory);
+	public boolean copySnapChatPictures(Context context) {
+		copySUDirectory(mPictureStorageDirectory, mPictureSaveDirectory,
+				context);
 		return true;
 	}
 
@@ -86,8 +82,8 @@ public class FileManager {
 	 * 
 	 * @boolean true iff the copy was successful
 	 */
-	public boolean copySnapChatVideos() {
-		copySUDirectory(mVideoStorageDirectory, mVideoSaveDirectory);
+	public boolean copySnapChatVideos(Context context) {
+		copySUDirectory(mVideoStorageDirectory, mVideoSaveDirectory, context);
 		return true;
 	}
 
@@ -101,28 +97,32 @@ public class FileManager {
 		String tempRename;
 		File f;
 		File[] files;
-		
+
 		// Rename the files now pls
-		try{
+		try {
 			f = new File(mPictureSaveDirectory);
-			
+
 			files = f.listFiles(mFilterPictures);
-			
-			for(File path : files){
+
+			for (File path : files) {
 				tempRename = path.getAbsolutePath();
-				
-				if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Old name: " + tempRename);
-				
-				tempRename = tempRename.substring(0, tempRename.length() - SNAPCHAT_PICTURE_EXTENSION_LENGTH);
-				
-				if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "New name: " + tempRename);
-				
-				if(!path.renameTo(new File(tempRename))){
-					if (DEBUG_LOG_FLAG) Log.d(LOG_TAG, "File was not renamed corectly.");
+
+				if (DEBUG_LOG_FLAG)
+					Log.d(LOG_TAG, "Old name: " + tempRename);
+
+				tempRename = tempRename.substring(0, tempRename.length()
+						- SNAPCHAT_PICTURE_EXTENSION_LENGTH);
+
+				if (DEBUG_LOG_FLAG)
+					Log.d(LOG_TAG, "New name: " + tempRename);
+
+				if (!path.renameTo(new File(tempRename))) {
+					if (DEBUG_LOG_FLAG)
+						Log.d(LOG_TAG, "File was not renamed corectly.");
 					return false;
 				}
 			}
-		}catch(NullPointerException e){
+		} catch (NullPointerException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -193,7 +193,7 @@ public class FileManager {
 	 *            The absolute path of the to directory
 	 * @return True if the copy was successful otherwise false
 	 */
-	public void copySUDirectory(String from, String to) {
+	public void copySUDirectory(String from, String to, Context context) {
 		File directoryCheck;
 		// Check if from directory exists
 		directoryCheck = new File(from);
@@ -206,13 +206,20 @@ public class FileManager {
 		String copyString = "cp " + from + " " + to;
 		if (DEBUG_LOG_FLAG)
 			Log.d(LOG_TAG, "CopyString: " + copyString);
+		
+		Bundle bundleDirectory = new Bundle();
+		bundleDirectory.putString("fromDirectory", from);
+		bundleDirectory.putString("toDirectory", to);
 
-		if (mContext != null) {
-			(new BackGroundTask()).setContext(mContext).execute(copyString);
+		BackgroundIntentService.performAction(context,
+				BackgroundIntentService.ACTION_COPY_DIRECTORY, bundleDirectory);
+
+		/*if (context != null) {
+			(new BackGroundTask()).setContext(context).execute(copyString);
 		} else {
 			if (DEBUG_LOG_FLAG)
 				Log.d(LOG_TAG, "No context - cannot start background task.");
-		}
+		}*/
 
 		// Check if to directory exists
 		// TODO: Implement check to double check that we copied them files
