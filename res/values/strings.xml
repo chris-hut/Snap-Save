@@ -42,4 +42,9 @@
     <!-- Floating Strings -->
     <string name="text_float">It\'s magic!</string>
     
+    <!-- Toast Strings -->
+    <string name="toast_completed_pictures">Snapchat Pictures have been copied.</string>
+    <string name="toast_completed_videos">Snapchat Videos have been copied.</string>
+    <string name="toast_completed_both">Snapchat Pictures and Videos have been copied.</string>
+    
 </resources>

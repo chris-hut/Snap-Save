@@ -7,8 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
 import eu.chainfire.libsuperuser.Shell;
 
@@ -94,63 +96,30 @@ public class FileManager {
 	 * @return true iff the rename operation is successful
 	 */
 	public boolean renameSnapChatPictures() {
-		String tempRename;
-		File f;
-		File[] files;
-
-		// Rename the files now pls
-		try {
-			f = new File(mPictureSaveDirectory);
-
-			files = f.listFiles(mFilterPictures);
-
-			for (File path : files) {
-				tempRename = path.getAbsolutePath();
-
-				if (DEBUG_LOG_FLAG)
-					Log.d(LOG_TAG, "Old name: " + tempRename);
-
-				tempRename = tempRename.substring(0, tempRename.length()
-						- SNAPCHAT_PICTURE_EXTENSION_LENGTH);
-
-				if (DEBUG_LOG_FLAG)
-					Log.d(LOG_TAG, "New name: " + tempRename);
-
-				if (!path.renameTo(new File(tempRename))) {
-					if (DEBUG_LOG_FLAG)
-						Log.d(LOG_TAG, "File was not renamed corectly.");
-					return false;
-				}
-			}
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+		return renameFilesFromDirectory(mFilterPictures, mPictureSaveDirectory,
+				SNAPCHAT_PICTURE_EXTENSION_LENGTH);
 	}
 
 	/** FileFilter that parses snap chat pictures */
 	private FileFilter mFilterPictures = new FileFilter() {
 		@Override
 		public boolean accept(File pathName) {
+			String fName = pathName.getAbsolutePath();
 			// File must exist
 			if (!pathName.isFile()) {
 				if (DEBUG_LOG_FLAG) {
 					Log.d(LOG_TAG, "File does not exist.");
-					Log.d(LOG_TAG,
-							"File name was: " + pathName.getAbsolutePath());
+					Log.d(LOG_TAG, "File name was: " + fName);
 				}
 				return false;
 			}
 
 			// File must end in .nomedia
-			if (!pathName.getAbsolutePath()
-					.substring(pathName.getAbsolutePath().length() - 8)
+			if (!pathName.getAbsolutePath().substring(fName.length() - 8)
 					.equals(".nomedia")) {
 				if (DEBUG_LOG_FLAG) {
 					Log.d(LOG_TAG, "File did not end in .nomedia.");
-					Log.d(LOG_TAG,
-							"File name was: " + pathName.getAbsolutePath());
+					Log.d(LOG_TAG, "File name was: " + fName);
 				}
 				return false;
 			}
@@ -160,11 +129,50 @@ public class FileManager {
 							+ "h1a81hurcs00h[0-9]{13,}.jpg.nomedia")) {
 				if (DEBUG_LOG_FLAG) {
 					Log.d(LOG_TAG, "File was not good looking.");
-					Log.d(LOG_TAG,
-							"File name was: " + pathName.getAbsolutePath());
+					Log.d(LOG_TAG, "File name was: " + fName);
 					Log.d(LOG_TAG, "File should look more like: "
 							+ mPictureSaveDirectory + "/"
 							+ "h1a81hurcs00h[0-9]{13,}.jpg.nomedia");
+				}
+				return false;
+			}
+			return true;
+		}
+	};
+
+	/** FileFilter that parses snapchat vidoes */
+	private FileFilter mFilterVideos = new FileFilter() {
+
+		@Override
+		public boolean accept(File pathName) {
+			String fName = pathName.getAbsolutePath();
+			// File must exist
+			if (!pathName.isFile()) {
+				if (DEBUG_LOG_FLAG) {
+					Log.d(LOG_TAG, "File does not exist.");
+					Log.d(LOG_TAG, "File name was: " + fName);
+				}
+				return false;
+			}
+
+			// File must end in .nomedia
+			if (!pathName.getAbsolutePath().substring(fName.length() - 8)
+					.equals(".nomedia")) {
+				if (DEBUG_LOG_FLAG) {
+					Log.d(LOG_TAG, "File did not end in .nomedia.");
+					Log.d(LOG_TAG, "File name was: " + fName);
+				}
+				return false;
+			}
+			// File must be like: sesrh_dlw211374551611445.mp4.nomedia
+			if (!fName.matches(mVideoSaveDirectory + "/"
+					+ "sesrh_dlw[0-9]{15,}.mp4.nomedia")) {
+				if (DEBUG_LOG_FLAG) {
+					Log.d(LOG_TAG, "File was not good looking.");
+					Log.d(LOG_TAG, "File name was: " + fName);
+					Log.d(LOG_TAG, "File should look more like: "
+							+ mVideoSaveDirectory + "/"
+							+ "sesrh_dlw[0-9]{15,}.mp4.nomedia");
 				}
 				return false;
 			}
@@ -179,6 +187,58 @@ public class FileManager {
 	 * @return true iff the rename operation is successful
 	 */
 	public boolean renameSnapChatVideos() {
+		return renameFilesFromDirectory(mFilterVideos, mVideoSaveDirectory,
+				SNAPCHAT_PICTURE_EXTENSION_LENGTH);
+	}
+
+	/**
+	 * Renames a directory based on if it matches a provided FileFileter. This
+	 * rename operation will remove the last {@link length} characters from the
+	 * current name.
+	 * 
+	 * @param fFilter
+	 *            the file filter to choose the files format we want
+	 * @param directory
+	 *            the directory that the files are in
+	 * @param length
+	 * @return true iff the rename operation is successful
+	 */
+	private boolean renameFilesFromDirectory(FileFilter fFilter,
+			String directory, int length) {
+		String tempRename;
+		File f;
+		File[] files;
+
+		// rename the files now
+		try {
+			f = new File(directory);
+
+			files = f.listFiles(fFilter);
+
+			for (File path : files) {
+				tempRename = path.getAbsolutePath();
+
+				if (DEBUG_LOG_FLAG)
+					Log.d(LOG_TAG, "Old name: " + tempRename);
+
+				tempRename = tempRename.substring(0, (path.getAbsolutePath().length() - length));
+
+				if (DEBUG_LOG_FLAG)
+					Log.d(LOG_TAG, "New name: " + tempRename);
+
+				if (!path.renameTo(new File(tempRename))) {
+					if (DEBUG_LOG_FLAG)
+						Log.d(LOG_TAG, "File was not renamed correctly");
+					return false;
+				}
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return false;
+		}
+		// all files were renamed successfully
+		if (DEBUG_LOG_FLAG)
+			Log.d(LOG_TAG, "All files were renamed successfully.");
 		return true;
 	}
 
@@ -197,70 +257,52 @@ public class FileManager {
 		File directoryCheck;
 		// Check if from directory exists
 		directoryCheck = new File(from);
-		if ((directoryCheck.isDirectory()) || (directoryCheck.exists())) {
+		if (!(directoryCheck.isDirectory()) || !(directoryCheck.exists())) {
 			// This directory does not exist
 			if (DEBUG_LOG_FLAG)
 				Log.d(LOG_TAG, "Directory: " + from + " does not exist.");
 		}
 
+		final boolean copyPictures = from.equals(mPictureStorageDirectory);
+		
 		String copyString = "cp " + from + " " + to;
 		if (DEBUG_LOG_FLAG)
 			Log.d(LOG_TAG, "CopyString: " + copyString);
-		
+
 		Bundle bundleDirectory = new Bundle();
 		bundleDirectory.putString("fromDirectory", from);
 		bundleDirectory.putString("toDirectory", to);
 
-		BackgroundIntentService.performAction(context,
-				BackgroundIntentService.ACTION_COPY_DIRECTORY, bundleDirectory);
+		Intent startBackgroundService = new Intent(BackgroundIntentService.ACTION_COPY_DIRECTORY, null, context,
+				BackgroundIntentService.class);
+		startBackgroundService.putExtra("fromDirectory", from);
+		startBackgroundService.putExtra("toDirectory", to);
+		startBackgroundService.putExtra(
+				BackgroundIntentService.RESULT_RECEIVER_TAG,
+				new ResultReceiver(null) {
+					@Override
+					protected void onReceiveResult(int resultCode, Bundle resultDate){
+						if(resultCode == BackgroundIntentService.RESULT_COPY_SUCCESSFUL){
+							if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Copy of pictures was successful, renaming files now.");
+							if(copyPictures){
+								renameSnapChatPictures();
+							}else{
+								renameSnapChatVideos();
+							}
+						}else if(resultCode == BackgroundIntentService.RESULT_COPY_FAIL){
+							if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Copy of pictures was unsuccessful.");
+					}
+					}
+				});
 
-		/*if (context != null) {
-			(new BackGroundTask()).setContext(context).execute(copyString);
-		} else {
-			if (DEBUG_LOG_FLAG)
-				Log.d(LOG_TAG, "No context - cannot start background task.");
-		}*/
+		context.startService(startBackgroundService);
+
+		// BackgroundIntentService.performAction(context,BackgroundIntentService.ACTION_COPY_DIRECTORY,
+		// bundleDirectory);
 
 		// Check if to directory exists
 		// TODO: Implement check to double check that we copied them files
 
-	}
-
-	/**
-	 * This method will rename the file @oldName to @newName
-	 * 
-	 * @param oldName
-	 *            The absolute path to the file to rename
-	 * @param newName
-	 *            The absolute path to the new files name
-	 * @return True if the rename was successful otherwise false
-	 */
-	public boolean renameFile(String oldName, String newName) {
-		File f;
-
-		f = new File(oldName);
-
-		// Check if old name exists
-		if (!f.exists()) {
-			// File does not exist
-			if (DEBUG_LOG_FLAG)
-				Log.d(LOG_TAG, "File: " + oldName + " does not exist.");
-			// TODO: Alert the user that something went wrong
-			return false;
-		}
-
-		if (f.renameTo(new File(newName))) {
-			if (DEBUG_LOG_FLAG)
-				Log.d(LOG_TAG, "File was renamed to " + newName
-						+ "successfully.");
-			return true;
-
-		} else {
-			if (DEBUG_LOG_FLAG)
-				Log.d(LOG_TAG, "Error renaming file to: " + newName);
-			// TODO: Alert user that rename operation wasn't successful
-			return false;
-		}
 	}
 
 	public String getVideoSaveDirectory() {

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 public class FloatingWindow extends StandOutWindow {
 
@@ -16,7 +17,7 @@ public class FloatingWindow extends StandOutWindow {
 	private static Button buttonPictures = null;
 	private static Button buttonVideos = null;
 	private static Button buttonBoth = null;
-	
+
 	// My file manager
 	private static FileManager mFileManager;
 
@@ -42,53 +43,64 @@ public class FloatingWindow extends StandOutWindow {
 				.findViewById(R.id.button_floating_pictures);
 		buttonVideos = (Button) view.findViewById(R.id.button_floating_videos);
 		buttonBoth = (Button) view.findViewById(R.id.button_floating_both);
-		
+
 		// make my file manager
-		mFileManager= new FileManager();
+		mFileManager = new FileManager();
 
 		setTheOnClickListeners();
 	}
 
 	/** Sets the onClickListeners for the buttons */
-	private void setTheOnClickListeners(){
-		if(buttonPictures != null && buttonVideos != null && buttonBoth != null){
+	private void setTheOnClickListeners() {
+		if (buttonPictures != null && buttonVideos != null
+				&& buttonBoth != null) {
 			buttonPictures.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					// Copy them pictures
 					mFileManager.copySnapChatPictures(getApplicationContext());
 					// Rename them pictures
-					mFileManager.renameSnapChatPictures();
+					//mFileManager.renameSnapChatPictures();
+					// Let the world know we are finished
+					Toast.makeText(getBaseContext(),
+							getString(R.string.toast_completed_pictures),
+							Toast.LENGTH_SHORT).show();
 				}
 			});
-			
+
 			buttonVideos.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					// Copy them videos
 					mFileManager.copySnapChatVideos(getApplicationContext());
-					
+
 					// Rename them videos
-					mFileManager.renameSnapChatVideos();
+					//mFileManager.renameSnapChatVideos();
+					Toast.makeText(getBaseContext(),
+							getString(R.string.toast_completed_videos),
+							Toast.LENGTH_SHORT).show();
 				}
 			});
-			
+
 			buttonBoth.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					// Copy both of them!
 					mFileManager.copySnapChatPictures(getApplicationContext());
 					mFileManager.copySnapChatVideos(getApplicationContext());
-					
+
 					// Rename all of those things
-					mFileManager.renameSnapChatPictures();
-					mFileManager.renameSnapChatVideos();
+					//mFileManager.renameSnapChatPictures();
+					//mFileManager.renameSnapChatVideos();
+					Toast.makeText(getBaseContext(),
+							getString(R.string.toast_completed_both),
+							Toast.LENGTH_SHORT).show();
 				}
 			});
-		} else{
+		} else {
 			// Something is really wrong
 		}
 	}
