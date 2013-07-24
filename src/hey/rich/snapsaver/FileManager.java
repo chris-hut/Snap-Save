@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ResultReceiver;
 import android.util.Log;
 import eu.chainfire.libsuperuser.Shell;
@@ -37,8 +38,10 @@ public class FileManager {
 	private String mVideoSaveDirectory;
 
 	public FileManager() {
-		setVideoSaveDirectory("/storage/sdcard0/snaps");
-		setPictureSaveDirectory("/storage/sdcard0/snaps");
+		String root = Environment.getExternalStorageDirectory()
+				.getAbsolutePath();
+		setVideoSaveDirectory(root + "/snaps/");
+		setPictureSaveDirectory(root + "/snaps/");
 	}
 
 	/**
@@ -125,13 +128,13 @@ public class FileManager {
 			}
 			// File must be like: h1a81hurcs00h1368487198510.jpg.nomedia
 			if (!pathName.getAbsolutePath().matches(
-					mPictureSaveDirectory + "/"
+					mPictureSaveDirectory
 							+ "h1a81hurcs00h[0-9]{13,}.jpg.nomedia")) {
 				if (DEBUG_LOG_FLAG) {
 					Log.d(LOG_TAG, "File was not good looking.");
 					Log.d(LOG_TAG, "File name was: " + fName);
 					Log.d(LOG_TAG, "File should look more like: "
-							+ mPictureSaveDirectory + "/"
+							+ mPictureSaveDirectory
 							+ "h1a81hurcs00h[0-9]{13,}.jpg.nomedia");
 				}
 				return false;
@@ -165,13 +168,13 @@ public class FileManager {
 				return false;
 			}
 			// File must be like: sesrh_dlw211374551611445.mp4.nomedia
-			if (!fName.matches(mVideoSaveDirectory + "/"
+			if (!fName.matches(mVideoSaveDirectory
 					+ "sesrh_dlw[0-9]{15,}.mp4.nomedia")) {
 				if (DEBUG_LOG_FLAG) {
 					Log.d(LOG_TAG, "File was not good looking.");
 					Log.d(LOG_TAG, "File name was: " + fName);
 					Log.d(LOG_TAG, "File should look more like: "
-							+ mVideoSaveDirectory + "/"
+							+ mVideoSaveDirectory
 							+ "sesrh_dlw[0-9]{15,}.mp4.nomedia");
 				}
 				return false;
@@ -221,7 +224,8 @@ public class FileManager {
 				if (DEBUG_LOG_FLAG)
 					Log.d(LOG_TAG, "Old name: " + tempRename);
 
-				tempRename = tempRename.substring(0, (path.getAbsolutePath().length() - length));
+				tempRename = tempRename.substring(0, (path.getAbsolutePath()
+						.length() - length));
 
 				if (DEBUG_LOG_FLAG)
 					Log.d(LOG_TAG, "New name: " + tempRename);
@@ -264,7 +268,7 @@ public class FileManager {
 		}
 
 		final boolean copyPictures = from.equals(mPictureStorageDirectory);
-		
+
 		String copyString = "cp " + from + " " + to;
 		if (DEBUG_LOG_FLAG)
 			Log.d(LOG_TAG, "CopyString: " + copyString);
@@ -273,7 +277,8 @@ public class FileManager {
 		bundleDirectory.putString("fromDirectory", from);
 		bundleDirectory.putString("toDirectory", to);
 
-		Intent startBackgroundService = new Intent(BackgroundIntentService.ACTION_COPY_DIRECTORY, null, context,
+		Intent startBackgroundService = new Intent(
+				BackgroundIntentService.ACTION_COPY_DIRECTORY, null, context,
 				BackgroundIntentService.class);
 		startBackgroundService.putExtra("fromDirectory", from);
 		startBackgroundService.putExtra("toDirectory", to);
@@ -281,17 +286,22 @@ public class FileManager {
 				BackgroundIntentService.RESULT_RECEIVER_TAG,
 				new ResultReceiver(null) {
 					@Override
-					protected void onReceiveResult(int resultCode, Bundle resultDate){
-						if(resultCode == BackgroundIntentService.RESULT_COPY_SUCCESSFUL){
-							if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Copy of pictures was successful, renaming files now.");
-							if(copyPictures){
+					protected void onReceiveResult(int resultCode,
+							Bundle resultDate) {
+						if (resultCode == BackgroundIntentService.RESULT_COPY_SUCCESSFUL) {
+							if (DEBUG_LOG_FLAG)
+								Log.d(LOG_TAG,
+										"Copy of pictures was successful, renaming files now.");
+							if (copyPictures) {
 								renameSnapChatPictures();
-							}else{
+							} else {
 								renameSnapChatVideos();
 							}
-						}else if(resultCode == BackgroundIntentService.RESULT_COPY_FAIL){
-							if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Copy of pictures was unsuccessful.");
-					}
+						} else if (resultCode == BackgroundIntentService.RESULT_COPY_FAIL) {
+							if (DEBUG_LOG_FLAG)
+								Log.d(LOG_TAG,
+										"Copy of pictures was unsuccessful.");
+						}
 					}
 				});
 
