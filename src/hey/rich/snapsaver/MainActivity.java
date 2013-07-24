@@ -1,8 +1,5 @@
 package hey.rich.snapsaver;
 
-import java.io.File;
-import java.io.FileFilter;
-
 import wei.mark.standout.StandOutWindow;
 import android.app.Activity;
 import android.app.Dialog;
@@ -17,7 +14,6 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -74,11 +70,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// Copy pictures
-				copySnapChatDirectory(getString(R.string.location_pictures),
-						storageLocation);
-
-				// Rename pictures
-				// TODO: Create method to check files to rename
+				mFileManager.copySnapChatPictures(getApplicationContext());
 			}
 		});
 
@@ -87,11 +79,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// Copy videos
-				copySnapChatDirectory(getString(R.string.location_videos),
-						storageLocation);
-
-				// Rename videos
-				// TODO: Create method to check files to rename
+				mFileManager.copySnapChatVideos(getApplicationContext());
 			}
 		});
 
@@ -100,13 +88,8 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// Copy pics and videos
-				copySnapChatDirectory(getString(R.string.location_pictures),
-						storageLocation);
-				copySnapChatDirectory(getString(R.string.location_videos),
-						storageLocation);
-
-				// Rename pics and videos
-				// TODO: create method to check files to rename
+				mFileManager.copySnapChatPictures(getApplicationContext());
+				mFileManager.copySnapChatVideos(getApplicationContext());
 			}
 		});
 
@@ -140,12 +123,6 @@ public class MainActivity extends Activity {
 	private void closeFloatingWindow(){
 		StandOutWindow.closeAll(this, FloatingWindow.class);
 	}
-
-	private void copySnapChatDirectory(String from, String to) {
-		
-		//mFileManager.copySUDirectory(from, to, this);
-	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

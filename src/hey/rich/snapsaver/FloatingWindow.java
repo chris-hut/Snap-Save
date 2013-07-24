@@ -60,8 +60,6 @@ public class FloatingWindow extends StandOutWindow {
 				public void onClick(View v) {
 					// Copy them pictures
 					mFileManager.copySnapChatPictures(getApplicationContext());
-					// Rename them pictures
-					//mFileManager.renameSnapChatPictures();
 					// Let the world know we are finished
 					Toast.makeText(getBaseContext(),
 							getString(R.string.toast_completed_pictures),
