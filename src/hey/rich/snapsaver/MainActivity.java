@@ -4,7 +4,9 @@ import wei.mark.standout.StandOutWindow;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class MainActivity extends Activity {
@@ -26,20 +29,20 @@ public class MainActivity extends Activity {
 	// Strings
 	private String storageLocation;
 	private static final String STRING_PREFERENCES = "stringPrefs";
+	private static final String SNAPCHAT_PACKAGE_NAME = "com.snapchat.android";
+	private static final String LOG_TAG = "MainActivity";
 
 	// Shared Preferences
 	private SharedPreferences prefs;
 	private SharedPreferences.Editor prefEditor;
 
-	// Booleans
-	/** Whether pictures and videos should be in different directories */
-	private boolean splitDirectory;
+	// Flags
+	/** Flag for starting snapchat when floating window is opened. */
+	private static boolean mStartSnapChat;
 
 	// Log constants
 	/** Flag for Debug logs. */
-	private final boolean LOCAL_LOGD = true;
-	/** Flag for Verbose logs. */
-	private final boolean LOCAL_LOGV = true;
+	private final boolean DEBUG_LOG_FLAG =  true;
 
 	/** File Manager */
 	private FileManager mFileManager;
@@ -99,6 +102,20 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// Launch that floater
 				closeFloatingWindow();
+
+				// Launch the snapchat application
+				if (mStartSnapChat) {
+					if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Trying to start Snapchat app");
+					// Start snapchat app
+					PackageManager pm = getApplicationContext()
+							.getPackageManager();
+					Intent startSnapChatIntent = pm
+							.getLaunchIntentForPackage(SNAPCHAT_PACKAGE_NAME);
+					if(startSnapChatIntent != null){
+						getApplicationContext().startActivity(startSnapChatIntent);
+					}
+
+				}
 				launchFloatingWindow();
 
 			}
@@ -120,7 +137,7 @@ public class MainActivity extends Activity {
 	 * 
 	 * TODO: Choose what window you want
 	 */
-	private void closeFloatingWindow(){
+	private void closeFloatingWindow() {
 		StandOutWindow.closeAll(this, FloatingWindow.class);
 	}
 
@@ -135,23 +152,20 @@ public class MainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.settings_change_directory: {
-			// Change directory
-			changeDirectory(this);
-			return true;
-		}
-		case R.id.settings_check_box_split_directory: {
-			if (item.isChecked()) {
-				splitDirectory = false;
-				if (LOCAL_LOGV)
-					Log.v("Snaps", "Split directory checkbox was unchecked");
-				item.setChecked(false);
-			} else {
-				splitDirectory = true;
-				if (LOCAL_LOGV)
-					Log.v("Snaps", "Split directory checkbox was checked");
-				item.setChecked(true);
-			}
+		case R.id.menu_check_box_start_snapchat_on_float: {
+			// Toggle the checkbox
+
+			if (DEBUG_LOG_FLAG)
+				Log.d(LOG_TAG,
+						"Checkbox checked, current value: " + item.isChecked());
+
+			boolean alreadyChecked = item.isChecked();
+
+			item.setChecked(!alreadyChecked);
+			
+			// Set the value of flag
+			mStartSnapChat = item.isChecked();
+
 			return true;
 		}
 		default:
@@ -213,7 +227,7 @@ public class MainActivity extends Activity {
 		prefs = this.getSharedPreferences("hey.rich.SnapSaver",
 				Context.MODE_PRIVATE);
 		prefEditor.putString("STORAGE_LOCATION", storageLocation);
-		prefEditor.putBoolean("SPLIT_DIRECTORY", splitDirectory);
+		prefEditor.putBoolean("START_SNAPCHAT", mStartSnapChat);
 		prefEditor.commit();
 	}
 
@@ -222,9 +236,9 @@ public class MainActivity extends Activity {
 		super.onResume();
 		storageLocation = prefs.getString("storageLocation",
 				getString(R.string.default_location));
-		if (LOCAL_LOGV)
-			Log.v("Snaps", "storageLocation set to: " + storageLocation);
-		splitDirectory = prefs.getBoolean("SPLIT_DIRECTORY", false);
+		if (DEBUG_LOG_FLAG)
+			Log.d("Snaps", "storageLocation set to: " + storageLocation);
+		mStartSnapChat = prefs.getBoolean("START_SNAPCHAT", false);
 
 		// Creating new filemanager
 		mFileManager = new FileManager();
