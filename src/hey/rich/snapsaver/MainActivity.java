@@ -2,21 +2,24 @@ package hey.rich.snapsaver;
 
 import wei.mark.standout.StandOutWindow;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.Toast;
+import eu.chainfire.libsuperuser.Shell;
 
 public class MainActivity extends Activity {
 
@@ -39,10 +42,12 @@ public class MainActivity extends Activity {
 	// Flags
 	/** Flag for starting snapchat when floating window is opened. */
 	private static boolean mStartSnapChat;
+	/** Flag declaring if we have root */
+	private static boolean mHaveRoot = false;
 
 	// Log constants
 	/** Flag for Debug logs. */
-	private final boolean DEBUG_LOG_FLAG =  true;
+	private final boolean DEBUG_LOG_FLAG = true;
 
 	/** File Manager */
 	private FileManager mFileManager;
@@ -54,6 +59,9 @@ public class MainActivity extends Activity {
 																		// before
 																		// setContentView
 		setContentView(R.layout.activity_main);
+
+		// Check for root if we don't already have it
+		(new GetRoot()).execute();
 
 		prefs = getSharedPreferences(STRING_PREFERENCES, MODE_PRIVATE);
 		prefEditor = prefs.edit();
@@ -105,14 +113,16 @@ public class MainActivity extends Activity {
 
 				// Launch the snapchat application
 				if (mStartSnapChat) {
-					if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Trying to start Snapchat app");
+					if (DEBUG_LOG_FLAG)
+						Log.d(LOG_TAG, "Trying to start Snapchat app");
 					// Start snapchat app
 					PackageManager pm = getApplicationContext()
 							.getPackageManager();
 					Intent startSnapChatIntent = pm
 							.getLaunchIntentForPackage(SNAPCHAT_PACKAGE_NAME);
-					if(startSnapChatIntent != null){
-						getApplicationContext().startActivity(startSnapChatIntent);
+					if (startSnapChatIntent != null) {
+						getApplicationContext().startActivity(
+								startSnapChatIntent);
 					}
 
 				}
@@ -162,7 +172,7 @@ public class MainActivity extends Activity {
 			boolean alreadyChecked = item.isChecked();
 
 			item.setChecked(!alreadyChecked);
-			
+
 			// Set the value of flag
 			mStartSnapChat = item.isChecked();
 
@@ -174,51 +184,47 @@ public class MainActivity extends Activity {
 	}
 
 	/**
-	 * Creates a dialog to allow the user to change their current directory
-	 * Modified from mkoyong:
-	 * http://www.mkyong.com/android/android-custom-dialog-example/
+	 * Updates the current status of the application regarding root status
+	 * 
+	 * @param root
+	 *            true if we have root access, false otherwise
 	 */
-	private void changeDirectory(Context context) {
-		final Dialog dialog = new Dialog(context);
-		dialog.setContentView(R.layout.change_directory);
-		dialog.setTitle(R.string.dialog_new_directory);
+	private void updateRootStatus(boolean root) {
+		mHaveRoot = root;
 
-		// Set the custom dialog components
-		final EditText text = (EditText) dialog
-				.findViewById(R.id.dialog_edit_text);
+		buttonBoth.setEnabled(mHaveRoot);
+		buttonFloater.setEnabled(mHaveRoot);
+		buttonPicture.setEnabled(mHaveRoot);
+		buttonVideo.setEnabled(mHaveRoot);
 
-		// Setting text to be what every it is
-		text.setText(storageLocation);
-		Button saveButton = (Button) dialog
-				.findViewById(R.id.dialog_positive_button);
-		Button cancelButton = (Button) dialog
-				.findViewById(R.id.dialog_negative_button);
+		if (mHaveRoot) {
+			// We have root access
+			// TODO: No strings hardcoded
+			Toast.makeText(getBaseContext(), "Got root access.",
+					Toast.LENGTH_SHORT);
 
-		saveButton.setOnClickListener(new OnClickListener() {
+			if (DEBUG_LOG_FLAG)
+				Log.d(LOG_TAG, "Got root access, enabling buttons.");
 
-			@Override
-			public void onClick(View v) {
-				// TODO: Save the text
-				storageLocation = text.getText().toString();
+		} else {
+			// We dont have root
+			if (DEBUG_LOG_FLAG)
+				Log.d(LOG_TAG, "Don't have root, disabling buttons.");
+			// TODO: Throw up a dialog
+			new AlertDialog.Builder(this)
+					.setTitle("Error getting root.")
+					.setMessage(
+							"Sorry I wasn't able to get root access. Check if you have root access on your device and restart this application.")
+					.setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
 
-				// Dismiss the dialog
-				dialog.dismiss();
-
-				// Set the EditText to be the storageLocation text
-				text.setText(storageLocation);
-			}
-		});
-
-		cancelButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// Dismiss the dialog
-				dialog.dismiss();
-			}
-		});
-
-		dialog.show();
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.cancel();
+								}
+							}).show();
+		}
 	}
 
 	@Override
@@ -244,4 +250,20 @@ public class MainActivity extends Activity {
 		mFileManager = new FileManager();
 
 	}
+
+	/** BackgroundTask to ask for SU permissions */
+	private class GetRoot extends AsyncTask<Void, Void, Boolean> {
+
+		@Override
+		protected void onPostExecute(Boolean root) {
+			updateRootStatus(root);
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... arg0) {
+			return Boolean.valueOf(Shell.SU.available());
+		}
+
+	}
+
 }

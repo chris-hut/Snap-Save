@@ -21,14 +21,10 @@
     <string name="default_location">/storage/sdcard0/snaps/</string>
     
     <!-- Menu strings -->
-    <string name="menu_location_text_for_ppls">This is the where the snaps will be stored</string>
-    <string name="menu_change_directory">Change Directory</string>
-    <string name="menu_check_box_split">Split pictures and videos?</string>
+    <string name="menu_check_box_start_snapchat_on_float">Start snapchat</string>
     
     <!-- Dialog strings -->
-    <string name="dialog_negative">Cancel</string>
-    <string name="dialog_positive">Save</string>
-    <string name="dialog_new_directory">Enter new directory:</string>
+    <string name="no_root_dialog_positive_button">OK</string>
     
     <!-- Information strings -->
     <string name="information_string">This app should copy your snapchats into a folder of your choice.</string>

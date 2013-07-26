@@ -2,18 +2,13 @@ package hey.rich.snapsaver;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
 import android.util.Log;
-import eu.chainfire.libsuperuser.Shell;
 
 public class FileManager {
 
@@ -329,57 +324,6 @@ public class FileManager {
 
 	public void setPictureSaveDirectory(String pictureSaveDirectory) {
 		this.mPictureSaveDirectory = pictureSaveDirectory;
-	}
-
-	// SU stuff
-	// Based of Chainfires libsuperuser_example
-	private class BackGroundTask extends AsyncTask<String, Void, List<String>> {
-		private Context context = null;
-		private boolean suAvailable = false;
-		private List<String> suResult = null;
-
-		public BackGroundTask() {
-			suResult = new ArrayList<String>();
-		}
-
-		public BackGroundTask setContext(Context c) {
-			this.context = c;
-			return this;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			((MainActivity) context)
-					.setProgressBarIndeterminateVisibility(true);
-		}
-
-		@Override
-		protected List<String> doInBackground(String... params) {
-			// Some SU stuff
-			suResult = null;
-			suAvailable = Shell.SU.available();
-			if (suAvailable) {
-				suResult = Shell.SU.run(params);
-				// TODO: Update progress if this is taking a long time
-			}
-
-			return suResult;
-		}
-
-		@Override
-		protected void onPostExecute(List<String> result) {
-			// Output handling
-			if (DEBUG_LOG_FLAG) {
-				Log.d(LOG_TAG, "Root? " + suAvailable);
-				Log.d(LOG_TAG, "Result: ");
-				Iterator<String> it = result.iterator();
-				while (it.hasNext()) {
-					Log.d(LOG_TAG, it.next());
-				}
-			}
-			((MainActivity) context)
-					.setProgressBarIndeterminateVisibility(false);
-		}
 	}
 
 }
