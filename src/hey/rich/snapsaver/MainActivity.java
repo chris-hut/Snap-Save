@@ -30,14 +30,11 @@ public class MainActivity extends Activity {
 	private Button buttonFloater;
 
 	// Strings
-	private String storageLocation;
+	private String mStorageLocation;
 	private static final String STRING_PREFERENCES = "stringPrefs";
 	private static final String SNAPCHAT_PACKAGE_NAME = "com.snapchat.android";
+	private static final String PREFS_NAME = "SHARED_PREFERENCES";
 	private static final String LOG_TAG = "MainActivity";
-
-	// Shared Preferences
-	private SharedPreferences prefs;
-	private SharedPreferences.Editor prefEditor;
 
 	// Flags
 	/** Flag for starting snapchat when floating window is opened. */
@@ -63,9 +60,6 @@ public class MainActivity extends Activity {
 		// Check for root if we don't already have it
 		(new GetRoot()).execute();
 
-		prefs = getSharedPreferences(STRING_PREFERENCES, MODE_PRIVATE);
-		prefEditor = prefs.edit();
-
 		buttonPicture = (Button) findViewById(R.id.button_copy_picture);
 		buttonVideo = (Button) findViewById(R.id.button_copy_video);
 		buttonBoth = (Button) findViewById(R.id.button_both);
@@ -81,7 +75,14 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// Copy pictures
-				mFileManager.copySnapChatPictures(getApplicationContext());
+				if (mHaveRoot) {
+					mFileManager.copySnapChatPictures(getApplicationContext());
+				} else {
+					if (DEBUG_LOG_FLAG)
+						// TODO: No hardcoded strings
+						Log.d(LOG_TAG,
+								"Even though picture button should have been disabled we clicked it.");
+				}
 			}
 		});
 
@@ -90,7 +91,14 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// Copy videos
-				mFileManager.copySnapChatVideos(getApplicationContext());
+				if (mHaveRoot) {
+					mFileManager.copySnapChatVideos(getApplicationContext());
+				} else {
+					// TODO: no hardcoded strings
+					if (DEBUG_LOG_FLAG)
+						Log.d(LOG_TAG,
+								"Even though video button should have been disabled we clicked it.");
+				}
 			}
 		});
 
@@ -99,8 +107,15 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// Copy pics and videos
-				mFileManager.copySnapChatPictures(getApplicationContext());
-				mFileManager.copySnapChatVideos(getApplicationContext());
+				if (mHaveRoot) {
+					mFileManager.copySnapChatPictures(getApplicationContext());
+					mFileManager.copySnapChatVideos(getApplicationContext());
+				} else {
+					// TODO: no hardcoded strings
+					if (DEBUG_LOG_FLAG)
+						Log.d(LOG_TAG,
+								"Even though both button should have been disabled we somehow clicked it.");
+				}
 			}
 		});
 
@@ -110,24 +125,30 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// Launch that floater
 				closeFloatingWindow();
+				if (mHaveRoot) {
+					// Launch the snapchat application
+					if (mStartSnapChat) {
+						if (DEBUG_LOG_FLAG)
+							Log.d(LOG_TAG, "Trying to start Snapchat app");
+						// Start snapchat app
+						PackageManager pm = getApplicationContext()
+								.getPackageManager();
+						Intent startSnapChatIntent = pm
+								.getLaunchIntentForPackage(SNAPCHAT_PACKAGE_NAME);
+						if (startSnapChatIntent != null) {
+							getApplicationContext().startActivity(
+									startSnapChatIntent);
+						}
 
-				// Launch the snapchat application
-				if (mStartSnapChat) {
-					if (DEBUG_LOG_FLAG)
-						Log.d(LOG_TAG, "Trying to start Snapchat app");
-					// Start snapchat app
-					PackageManager pm = getApplicationContext()
-							.getPackageManager();
-					Intent startSnapChatIntent = pm
-							.getLaunchIntentForPackage(SNAPCHAT_PACKAGE_NAME);
-					if (startSnapChatIntent != null) {
-						getApplicationContext().startActivity(
-								startSnapChatIntent);
 					}
 
+					launchFloatingWindow();
+				} else {
+					// TODO: No hardcoded strings
+					if (DEBUG_LOG_FLAG)
+						Log.d(LOG_TAG,
+								"Even though both button should be disabled we somehow clicked it.");
 				}
-				launchFloatingWindow();
-
 			}
 		});
 	}
@@ -210,7 +231,6 @@ public class MainActivity extends Activity {
 			// We dont have root
 			if (DEBUG_LOG_FLAG)
 				Log.d(LOG_TAG, "Don't have root, disabling buttons.");
-			// TODO: Throw up a dialog
 			new AlertDialog.Builder(this)
 					.setTitle("Error getting root.")
 					.setMessage(
@@ -230,21 +250,27 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		prefs = this.getSharedPreferences("hey.rich.SnapSaver",
-				Context.MODE_PRIVATE);
-		prefEditor.putString("STORAGE_LOCATION", storageLocation);
-		prefEditor.putBoolean("START_SNAPCHAT", mStartSnapChat);
-		prefEditor.commit();
+		// TODO: No more hardcoded strings
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		// TODO: No strings at all should be hardcoded
+		editor.putBoolean("START_SNAPCHAT", mStartSnapChat);
+		editor.putString("SNAPCHAT_STORAGE_LOCATION", mStorageLocation);
+		if (DEBUG_LOG_FLAG)
+			Log.d(LOG_TAG, "Just saved mStartSnapChat as: " + mStartSnapChat);
+		// Commit the preferences
+		editor.commit();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		storageLocation = prefs.getString("storageLocation",
-				getString(R.string.default_location));
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		mStartSnapChat = settings.getBoolean("START_SNAPCHAT", false);
+		mStorageLocation = settings.getString("SNAPCHAT_STORAGE_LOCATION",
+				mStorageLocation);
 		if (DEBUG_LOG_FLAG)
-			Log.d("Snaps", "storageLocation set to: " + storageLocation);
-		mStartSnapChat = prefs.getBoolean("START_SNAPCHAT", false);
+			Log.d(LOG_TAG, "Just loaded mStartSnapChat as: " + mStartSnapChat);
 
 		// Creating new filemanager
 		mFileManager = new FileManager();
