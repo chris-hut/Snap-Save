@@ -1,46 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SnapSaver</string>
-    
-    <!-- Main screen -->
-        <!-- Button texts -->
-        <string name="button_copy_picture">Copy Snap Pictures</string>
-        <string name="button_copy_video"> Copy Snap Videos</string>
-        <string name="button_copy_both">Copy Both</string>
-        <string name="button_launch_floater">Launch Floater</string>
-        <string name="button_floating_pictures">Pictures</string>
-        <string name="button_floating_videos">Videos</string>
-        <string name="button_floating_both">Both</string>
+	<string name="app_name">SnapSaver</string>
 
-    <!-- TextView texts -->
+	<!-- Main screen -->
+	<!-- Button texts -->
+	<string name="button_copy_picture">Copy Snap Pictures</string>
+	<string name="button_copy_video"> Copy Snap Videos</string>
+	<string name="button_copy_both">Copy Both</string>
+	<string name="button_launch_floater">Launch Floater</string>
+	<string name="button_floating_pictures">Pictures</string>
+	<string name="button_floating_videos">Videos</string>
+	<string name="button_floating_both">Both</string>
 
-    <!-- Locations -->
-    <string name="location_pictures">/data/data/com.snapchat.android/cache/received_image_snaps/*</string>
-    <string name="location_videos">/data/media/0/Android/data/com.snapchat.android/cache/received_video_snaps/*</string>
-    <string name="default_location">/storage/sdcard0/snaps/</string>
-    
-    <!-- Menu strings -->
-    <string name="menu_check_box_start_snapchat_on_float">Start snapchat</string>
-    
-    <!-- Dialog strings -->
-    <string name="no_root_dialog_positive_button">OK</string>
-    
-    <!-- Information strings -->
-    <string name="information_string">This app should copy your snapchats into a folder of your choice.</string>
-    
-    <!-- Progress strings -->
-    <string name="progress_1_copy_picture">Copying pictures to: </string>
-    <string name="progress_1_copy_video">Copying videos to: </string>
-    <string name="progress_2_rename_picture">Renaming pictures in: </string>
-    <string name="progress_2_rename_video">Renaming videos in: </string>
-    
-    <!-- Floating Strings -->
-    <string name="text_float">It\'s magic!</string>
-    
-    <!-- Toast Strings -->
-    <string name="toast_completed_pictures">Snapchat Pictures have been copied.</string>
-    <string name="toast_completed_videos">Snapchat Videos have been copied.</string>
-    <string name="toast_completed_both">Snapchat Pictures and Videos have been copied.</string>
-    
+	<!-- FloatingWindow -->
+	<string name="floating_notification_cancel_text">Click to close Window</string>
+
+
+	<!-- Locations -->
+	<string name="location_pictures">/data/data/com.snapchat.android/cache/received_image_snaps/</string>
+	<string name="location_videos">/data/media/0/Android/data/com.snapchat.android/cache/received_video_snaps/</string>
+	<string name="default_location">/storage/sdcard0/snaps/</string>
+
+	<!-- Menu strings -->
+	<string name="menu_check_box_start_snapchat_on_float">Start snapchat</string>
+
+	<!-- Dialog strings -->
+	<string name="dialog_no_root_title">Error getting root.</string>
+	<string name="dialog_no_root_message">Sorry, but I wasn\'t able to get root access on your device. Check if you have root permissions and restart this application.</string>
+	<string name="dialog_no_root_positive_button">OK</string>
+
+	<!-- Information strings -->
+	<string name="information_string">This app should copy your snapchats into a folder of your choice.</string>
+
+	<!-- Progress strings -->
+	<string name="progress_1_copy_picture">Copying pictures to: </string>
+	<string name="progress_1_copy_video">Copying videos to: </string>
+	<string name="progress_2_rename_picture">Renaming pictures in: </string>
+	<string name="progress_2_rename_video">Renaming videos in: </string>
+
+	<!-- Floating Strings -->
+	<string name="text_float">It\'s magic!</string>
+
+	<!-- Toast Strings -->
+	<string name="toast_completed_pictures">Snapchat Pictures have been copied.</string>
+	<string name="toast_completed_videos">Snapchat Videos have been copied.</string>
+	<string name="toast_completed_both">Snapchat Pictures and Videos have been copied.</string>
+	<string name="toast_successfully_got_root">Got root access.</string>
+
 </resources>

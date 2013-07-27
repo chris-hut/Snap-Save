@@ -31,9 +31,10 @@ public class MainActivity extends Activity {
 
 	// Strings
 	private String mStorageLocation;
-	private static final String STRING_PREFERENCES = "stringPrefs";
 	private static final String SNAPCHAT_PACKAGE_NAME = "com.snapchat.android";
 	private static final String PREFS_NAME = "SHARED_PREFERENCES";
+	private static final String SHARED_PREF_STORAGE_SNAPCHAT = "SNAPCHAT_STORAGE";
+	private static final String SHARED_PREF_START_SNAPCHAT = "SNAPCHAT_START_ON_FLOAT";
 	private static final String LOG_TAG = "MainActivity";
 
 	// Flags
@@ -79,7 +80,6 @@ public class MainActivity extends Activity {
 					mFileManager.copySnapChatPictures(getApplicationContext());
 				} else {
 					if (DEBUG_LOG_FLAG)
-						// TODO: No hardcoded strings
 						Log.d(LOG_TAG,
 								"Even though picture button should have been disabled we clicked it.");
 				}
@@ -94,7 +94,6 @@ public class MainActivity extends Activity {
 				if (mHaveRoot) {
 					mFileManager.copySnapChatVideos(getApplicationContext());
 				} else {
-					// TODO: no hardcoded strings
 					if (DEBUG_LOG_FLAG)
 						Log.d(LOG_TAG,
 								"Even though video button should have been disabled we clicked it.");
@@ -111,7 +110,6 @@ public class MainActivity extends Activity {
 					mFileManager.copySnapChatPictures(getApplicationContext());
 					mFileManager.copySnapChatVideos(getApplicationContext());
 				} else {
-					// TODO: no hardcoded strings
 					if (DEBUG_LOG_FLAG)
 						Log.d(LOG_TAG,
 								"Even though both button should have been disabled we somehow clicked it.");
@@ -144,7 +142,6 @@ public class MainActivity extends Activity {
 
 					launchFloatingWindow();
 				} else {
-					// TODO: No hardcoded strings
 					if (DEBUG_LOG_FLAG)
 						Log.d(LOG_TAG,
 								"Even though both button should be disabled we somehow clicked it.");
@@ -221,7 +218,8 @@ public class MainActivity extends Activity {
 		if (mHaveRoot) {
 			// We have root access
 			// TODO: No strings hardcoded
-			Toast.makeText(getBaseContext(), "Got root access.",
+			Toast.makeText(getBaseContext(),
+					getString(R.string.toast_successfully_got_root),
 					Toast.LENGTH_SHORT);
 
 			if (DEBUG_LOG_FLAG)
@@ -232,10 +230,10 @@ public class MainActivity extends Activity {
 			if (DEBUG_LOG_FLAG)
 				Log.d(LOG_TAG, "Don't have root, disabling buttons.");
 			new AlertDialog.Builder(this)
-					.setTitle("Error getting root.")
+					.setTitle(getString(R.string.dialog_no_root_title))
 					.setMessage(
-							"Sorry I wasn't able to get root access. Check if you have root access on your device and restart this application.")
-					.setPositiveButton("OK",
+							getString(R.string.dialog_no_root_message))
+					.setPositiveButton(getString(R.string.dialog_no_root_positive_button),
 							new DialogInterface.OnClickListener() {
 
 								@Override
@@ -254,8 +252,8 @@ public class MainActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		// TODO: No strings at all should be hardcoded
-		editor.putBoolean("START_SNAPCHAT", mStartSnapChat);
-		editor.putString("SNAPCHAT_STORAGE_LOCATION", mStorageLocation);
+		editor.putBoolean(SHARED_PREF_START_SNAPCHAT, mStartSnapChat);
+		editor.putString(SHARED_PREF_STORAGE_SNAPCHAT, mStorageLocation);
 		if (DEBUG_LOG_FLAG)
 			Log.d(LOG_TAG, "Just saved mStartSnapChat as: " + mStartSnapChat);
 		// Commit the preferences
@@ -266,8 +264,8 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		mStartSnapChat = settings.getBoolean("START_SNAPCHAT", false);
-		mStorageLocation = settings.getString("SNAPCHAT_STORAGE_LOCATION",
+		mStartSnapChat = settings.getBoolean(SHARED_PREF_START_SNAPCHAT, false);
+		mStorageLocation = settings.getString(SHARED_PREF_STORAGE_SNAPCHAT,
 				mStorageLocation);
 		if (DEBUG_LOG_FLAG)
 			Log.d(LOG_TAG, "Just loaded mStartSnapChat as: " + mStartSnapChat);

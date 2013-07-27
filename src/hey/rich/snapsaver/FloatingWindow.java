@@ -91,8 +91,6 @@ public class FloatingWindow extends StandOutWindow {
 					mFileManager.copySnapChatVideos(getApplicationContext());
 
 					// Rename all of those things
-					//mFileManager.renameSnapChatPictures();
-					//mFileManager.renameSnapChatVideos();
 					Toast.makeText(getBaseContext(),
 							getString(R.string.toast_completed_both),
 							Toast.LENGTH_SHORT).show();
@@ -119,7 +117,7 @@ public class FloatingWindow extends StandOutWindow {
 
 	@Override
 	public String getPersistentNotificationMessage(int id) {
-		return "Click to close the Window";
+		return getString(R.string.floating_notification_cancel_text);
 	}
 
 	@Override
