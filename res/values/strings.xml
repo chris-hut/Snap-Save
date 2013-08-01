@@ -16,7 +16,6 @@
 	<!-- FloatingWindow -->
 	<string name="floating_notification_cancel_text">Click to close Window</string>
 
-
 	<!-- Locations -->
 	<string name="location_pictures">/data/data/com.snapchat.android/cache/received_image_snaps/</string>
 	<string name="location_videos">/data/media/0/Android/data/com.snapchat.android/cache/received_video_snaps/</string>
@@ -47,5 +46,8 @@
 	<string name="toast_completed_videos">Snapchat Videos have been copied.</string>
 	<string name="toast_completed_both">Snapchat Pictures and Videos have been copied.</string>
 	<string name="toast_successfully_got_root">Got root access.</string>
+	
+	<!-- Gallery Strings -->
+	<string name="thumbnail_image">Thumbnail</string>
 
 </resources>

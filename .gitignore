@@ -9,3 +9,8 @@ gen/hey/rich/snapsaver/*
 gen/hey/rich/snapsaver/R.java
 bin/
 res/drawable-hdpi/*
+.idea*.*
+*.iml
+*.gradle
+sample_snapchat_folder/
+screenshot.png
