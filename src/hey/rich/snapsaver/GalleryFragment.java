@@ -11,9 +11,13 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.SlidingDrawer;
 
 public class GalleryFragment extends ListFragment {
 
@@ -24,20 +28,20 @@ public class GalleryFragment extends ListFragment {
 
 	ListView lView;
 	List<PictureVideoFile> files;
+	GalleryListViewAdapter adapter;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		// Not sure if I should do all of this from this, the onCreateView or if
-		// I should just do it from onCreate
 		files = new ArrayList<PictureVideoFile>();
-		files = populateFiles();
 
 		lView = (ListView) getActivity().findViewById(android.R.id.list);
-		GalleryListViewAdapter adapter = new GalleryListViewAdapter(
+		adapter = new GalleryListViewAdapter(
 				getActivity(), R.layout.gallery_list_item, files);
 		lView.setAdapter(adapter);
+		
+		populateFiles();
 
 		if (DEBUG_LOG_TAG)
 			Log.d(LOG_TAG, "Just set adapter.");
@@ -46,12 +50,14 @@ public class GalleryFragment extends ListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		// Get some settings
+		setHasOptionsMenu(true);
 		return inflater.inflate(R.layout.gallery, container, false);
 	}
 
-	private ArrayList<PictureVideoFile> populateFiles() {
+	private void populateFiles() {
 
-		ArrayList<PictureVideoFile> items = new ArrayList<PictureVideoFile>();
 
 		String name, time;
 		Date date;
@@ -63,24 +69,47 @@ public class GalleryFragment extends ListFragment {
 		File saveDirectory = new File("/storage/sdcard0/snaps/");
 		if(saveDirectory.exists() && saveDirectory.isDirectory()){
 			// Load the stuff 
-			File[] files = saveDirectory.listFiles();
+			File[] fileList = saveDirectory.listFiles();
 			
-			for(File f : files){
+			for(File f : fileList){
 				name = f.getAbsolutePath();
 				date = new Date(f.lastModified());
 				time = df.format(date);
 				image = getResources().getDrawable(R.drawable.ic_launcher);
-				items.add(new PictureVideoFile(image, name, time));
+				files.add(new PictureVideoFile(image, name, time));
+				if(DEBUG_LOG_TAG) Log.d(LOG_TAG, "Added file: " + name);
 			}
 		}else{
 			name = "Didn't work :(";
 			time = "Oh no!";
 			image = getResources().getDrawable(R.drawable.ic_launcher);
-			items.add(new PictureVideoFile(image, name, time));
+			files.add(new PictureVideoFile(image, name, time));
 		}
-		
+		adapter.notifyDataSetChanged();
 
-		return items;
 	}
 
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+		inflater.inflate(R.menu.menu_gallery, menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_gallery_refresh:
+			if(DEBUG_LOG_TAG) Log.d(LOG_TAG, "Refreshing gallery.");
+			// Can't just set files to be a new ArrayList, that means that it won't be the 
+			// same object that is connected to my adapter! need to use clear and add.
+			files.clear();
+			populateFiles();
+			if(DEBUG_LOG_TAG) Log.d(LOG_TAG, "Size of files is: " + files.size());
+			adapter.notifyDataSetChanged();
+			if(DEBUG_LOG_TAG) Log.d(LOG_TAG, "Size of adapter is: " + adapter.getCount());
+		return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 }

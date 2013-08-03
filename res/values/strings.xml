@@ -49,5 +49,6 @@
 	
 	<!-- Gallery Strings -->
 	<string name="thumbnail_image">Thumbnail</string>
+	<string name="action_bar_refresh_gallery">Refresh Gallery</string>
 
 </resources>
