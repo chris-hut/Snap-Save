@@ -14,9 +14,9 @@ import com.viewpagerindicator.TitlePageIndicator;
 
 import eu.chainfire.libsuperuser.Shell;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements MainFragment.MainFragmentListener{
 
-	private static boolean mHaveRoot = false;
+	public static boolean mHaveRoot = false;
 
 	// Log constants
 	/** Flag for Debug logs. */
@@ -45,9 +45,9 @@ public class MainActivity extends FragmentActivity {
 		
 		mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mPager);
-
+		
 	}
-
+	
 	/**
 	 * Updates the current status of the application regarding root status
 	 * 
@@ -57,20 +57,17 @@ public class MainActivity extends FragmentActivity {
 	private void updateRootStatus(boolean root) {
 		mHaveRoot = root;
 
+		if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Updating root status.");
 		if (mHaveRoot) {
 			// We have root access
 			// TODO: No strings hardcoded
 			Toast.makeText(getBaseContext(),
 					getString(R.string.toast_successfully_got_root),
 					Toast.LENGTH_SHORT);
-
-			if (DEBUG_LOG_FLAG)
-				Log.d(LOG_TAG, "Got root access, enabling buttons.");
+			if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Successfully got root access.");
 
 		} else {
 			// We dont have root
-			if (DEBUG_LOG_FLAG)
-				Log.d(LOG_TAG, "Don't have root, disabling buttons.");
 			new AlertDialog.Builder(this)
 					.setTitle(getString(R.string.dialog_no_root_title))
 					.setMessage(getString(R.string.dialog_no_root_message))
@@ -84,9 +81,15 @@ public class MainActivity extends FragmentActivity {
 									dialog.cancel();
 								}
 							}).show();
+			if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Was not able to get root.");
 		}
+		
 	}
 
+	public static boolean getRootStatus(){
+		return mHaveRoot;
+	}
+	
 	/** BackgroundTask to ask for SU permissions */
 	private class GetRoot extends AsyncTask<Void, Void, Boolean> {
 
@@ -100,6 +103,13 @@ public class MainActivity extends FragmentActivity {
 			return Boolean.valueOf(Shell.SU.available());
 		}
 
+	}
+
+	
+	@Override
+	public void onPassData() {
+		
+		
 	}
 
 }

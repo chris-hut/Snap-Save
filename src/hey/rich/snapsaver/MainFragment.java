@@ -1,6 +1,7 @@
 package hey.rich.snapsaver;
 
 import wei.mark.standout.StandOutWindow;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -31,7 +32,29 @@ public class MainFragment extends Fragment {
 	private static boolean mStartSnapChat = false;
 
 	// Should be updated from the main activity
-	private boolean mHaveRoot = true;
+	private boolean mHaveRoot = false;
+
+	// Callback to calling activity
+	private MainFragmentListener mCallback;
+
+	// Container activity must implement this interface
+	public interface MainFragmentListener {
+		public void onPassData();
+	}
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		// Ensure that container activity has implemented callback interface
+		try {
+			mCallback = (MainFragmentListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement MainFragmentListener.");
+		}
+		
+	}
 
 	private FileManager mFileManager;
 
@@ -43,8 +66,10 @@ public class MainFragment extends Fragment {
 		// We want some options!
 		setHasOptionsMenu(true);
 
-		Button buttonPicture = (Button) view
-				.findViewById(R.id.button_copy_picture);
+		// Update root status
+		mHaveRoot = MainActivity.getRootStatus();
+
+		Button buttonPicture = (Button) view.findViewById(R.id.button_copy_picture);
 		Button buttonVideo = (Button) view.findViewById(R.id.button_copy_video);
 		Button buttonBoth = (Button) view.findViewById(R.id.button_both);
 		Button buttonFloater = (Button) view.findViewById(R.id.button_floater);
@@ -131,6 +156,12 @@ public class MainFragment extends Fragment {
 			}
 		});
 
+		if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "We got roots? for the buttons: " + mHaveRoot);
+		buttonBoth.setEnabled(mHaveRoot);
+		buttonFloater.setEnabled(mHaveRoot);
+		buttonPicture.setEnabled(mHaveRoot);
+		buttonVideo.setEnabled(mHaveRoot);
+		
 		return view;
 	}
 
@@ -154,10 +185,10 @@ public class MainFragment extends Fragment {
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.main, menu);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
