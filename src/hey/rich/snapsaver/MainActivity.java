@@ -36,7 +36,7 @@ public class MainActivity extends FragmentActivity {
 		if(DEBUG_LOG_FLAG) Log.d(LOG_TAG, "Started snapsaver.");
 		
 		// TODO: figure out a nice system for calling root and playing with the result - callbacks?
-		//(new GetRoot()).execute();
+		(new GetRoot()).execute();
 		
 		mAdapter = new SnapSaverFragmentAdapter(getSupportFragmentManager());
 		
